@@ -24,6 +24,10 @@
   <link rel="preload" href="{{ 'theme.js' | asset_url }}" as="script">
   <link rel="preload" href="{{ 'lazysizes.js' | asset_url }}" as="script">
 
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  {{ 'minicart.scss.css' | asset_url | stylesheet_tag }}
+
   {%- if canonical_url != blank  -%}
     <link rel="canonical" href="{{ canonical_url }}">
   {%- endif -%}
@@ -169,9 +173,7 @@
 
   <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
 
-  {%- if settings.enable_ajax -%}
-    {% include 'cart-popup' %}
-  {%- endif -%}
+  {% include 'minicart' %}
 
   {% section 'header' %}
 
