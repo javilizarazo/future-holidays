@@ -9,17 +9,21 @@ const getCartData = async () => {
 class Minicart extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       itemsInCart: [],
-      totalPrice: 0
+      totalPrice: 0,
+      shop: {},
     };
   }
 
   componentDidMount() {
-    console.log("res", app);
+    this.cartData();
+  }
+
+  cartData = () => {
     getCartData().then(({ items, total_price }) => {
       let itemsInCart = items.map((element, index) => {
-        console.log("res", element);
         return (
           <React.Fragment key={index}>
             <div className="minicart__product">
@@ -33,51 +37,116 @@ class Minicart extends React.Component {
 
                 <div className="minicart__form">
                   <form>
-                    <input type="text" value={element.quantity} />
-                    <p>${element.line_price / 100.0}</p>
+                    <input
+                      type="number"
+                      defaultValue={element.quantity}
+                      key={element.quantity}
+                      onBlur={(e) => this.updateAmount(index, e.target.value)}
+                    />
+                    <p>${this.itemValue(element.line_price)}</p>
                   </form>
                 </div>
               </div>
+
+              <button type="button" onClick={() => this.removeFromCart(index)}>
+                X
+              </button>
             </div>
           </React.Fragment>
         );
       });
 
+      
       this.setState({
         itemsInCart: itemsInCart,
-        totalPrice: total_price
+        totalPrice: total_price,
       });
     });
+  };
+
+  itemValue = (value) => {
+    return (value / 100).toLocaleString();
   }
+
+  removeFromCart = async (index) => {
+    const request = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;",
+      },
+      body: JSON.stringify({
+        line: index + 1,
+        quantity: 0,
+      }),
+    };
+
+    await fetch("/cart/change.js", request).then(() => {
+      this.cartData();
+    });
+  };
+
+  updateAmount = async (index, value) => {
+    var request = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;",
+      },
+      body: JSON.stringify({
+        line: index + 1,
+        quantity: value,
+      }),
+    };
+
+    fetch("/cart/change.js", request).then(() => {
+      this.cartData();
+    });
+  };
+
+  closeMiniCart = () => {
+    document.querySelector(".minicart").classList.remove("visible");
+    document.querySelector('.bg-drop').classList.remove('visible');
+    document.body.classList.remove("minicart-open");
+  };
 
   render() {
     return (
       <>
         <header>
-          <h2>Cart</h2>
-          <button type="button" data-minicart-close>
+          <h2>{theme.strings.cartTitle}</h2>
+          <button
+            type="button"
+            onClick={() => {
+              this.closeMiniCart();
+            }}
+          >
             <img src={closeIcon} />
           </button>
         </header>
 
-        <div className="minicart__items">{this.state.itemsInCart}</div>
+        <div className="minicart__items">
+          {this.state.itemsInCart.length ? (
+            this.state.itemsInCart
+          ) : (
+            <p className="minicart__empty">Your cart is empty.</p>
+          )}
+        </div>
 
         <div className="minicart__note">
-          <h4>Order Note</h4>
+          <h4>{theme.strings.cartNote}</h4>
           <div className="minicart__form--note">
             <form>
-              <textarea placeholder="Eg: Thank you"></textarea>
+              <textarea placeholder={theme.strings.orderNoteExample}></textarea>
             </form>
           </div>
         </div>
 
         <div className="minicart__checkout">
           <div className="minicart__subtotal">
-            <h4>Subtotal</h4>
-            <span>${this.state.totalPrice / 100.0}</span>
+            <h4>{theme.strings.cartSubtotal}</h4>
+            <span>${this.itemValue(this.state.totalPrice)}</span>
           </div>
-          <p>Shipping, taxes, and discounts codes calculated at checkout.</p>
-          <button type="button">Check out</button>
+          <p>{theme.strings.taxesAndShipping}</p>
+          <button type="button">{theme.strings.cardCheckout}</button>
         </div>
       </>
     );
