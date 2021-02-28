@@ -148,7 +148,8 @@
         predictiveSearchShowPrice: {{ settings.predictive_search_show_price | json }},
         predictiveSearchShowVendor: {{ settings.predictive_search_show_vendor | json }}
       },
-      stylesheet: "{{ 'theme.css' | asset_url }}"
+      stylesheet: "{{ 'theme.css' | asset_url }}",
+      closeIcon: "{{ 'close.svg' | asset_url }}"
     }
 
     document.documentElement.className = document.documentElement.className.replace('no-js', 'js');

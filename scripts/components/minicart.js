@@ -1,5 +1,4 @@
 import React from "react";
-const closeIcon = "../../assets/close.svg";
 
 const getCartData = async () => {
   const data = await fetch("/cart.js");
@@ -119,7 +118,7 @@ class Minicart extends React.Component {
               this.closeMiniCart();
             }}
           >
-            <img src={closeIcon} />
+            <img src={theme.closeIcon} />
           </button>
         </header>
 
